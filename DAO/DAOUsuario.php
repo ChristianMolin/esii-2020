@@ -1,13 +1,13 @@
 <?php
 namespace DAO;
-mysqli_report(MYSQLY_REPORT_STRICT);
+mysqli_report(MYSQLI_REPORT_STRICT);
 require_once('../models/Usuario.php');
-use model\Usuario;
+use models\Usuario;
 
 /**
  * Esta classe é responsável por fazer a comunicação com o banco de dados,
  * promovendo as funções de logar e incluir novo usuário
- * @author Paulo Roberto Córdova
+ * @author Christian Emanuel Molin
  *
  */
 class DAOUsuario{
@@ -23,7 +23,7 @@ class DAOUsuario{
       }catch (\Exception $e){
          die($e->getMessage());
       }
-      
+
 
       $usuario = new Usuario();
 
@@ -39,10 +39,12 @@ class DAOUsuario{
 
          if($resultado->num_rows === 0){
             $usuario->addUsuario(null, null, null, null, FALSE);
+            throw new \Exception("Usuário ou senha inválidos!");
          }else{
             while($linha = $resultado->fetch_assoc()){
-               $usuari->addUsuario($linha['login'], $linha['nome'], $linha['email'], $linha['celular'], TRUE);
+               $usuario->addUsuario($linha['login'], $linha['nome'], $linha['email'], $linha['celular'], TRUE);
             }
+            return $usuario;
          }
       }else{
          throw new \Exception("Erro ao executar busca com os dados fornecidos!");
@@ -56,7 +58,7 @@ class DAOUsuario{
     * @param Usuario $usuario Objeto do tipo Usuario que deverá ser cadastrado
     * @return TRUE|Exception TRUE para inclusão bem sucedida ou Exception para inclusão mal sucedida
     */
-   public function incluirUsuario($nome, $email, $login, $senha){
+   public function incluirUsuario($nome, $email, $celular, $login, $senha){
        try {
          $connDB = $this->conectarBanco();
       } catch (\Exception $e) {
@@ -64,10 +66,10 @@ class DAOUsuario{
       }
 
       $sqlInsert = $connDB->prepare("insert into usuario
-                                       (nome, email, login, senha)
+                                       (nome, email, celular, login, senha)
                                        values
-                                       (?, ?, ?, ?)");
-      $sqlInsert->bind_param("ssss", $nome, $email, $login, $senha);
+                                       (?, ?, ?, ?, ?)");
+      $sqlInsert->bind_param("sssss", $nome, $email, $celular, $login, $senha);
       $sqlInsert->execute();
       if(!$sqlInsert->error){
          $retorno =  TRUE;
@@ -80,14 +82,10 @@ class DAOUsuario{
       return $retorno;
    }
    private function conectarBanco(){
-      if(!defined('DS')){
-         define('DS', DIRECTORY_SEPARATOR );
-      }
-      if(!defined('BASE_DIR')){
-         define('BASE_DIR', dirname(__FILE__).DS );
-      }
+     $ds = DIRECTORY_SEPARATOR;
+     $base_dir = dirname(__FILE__).$ds;
 
-      require_once(DS.'bd_config.php');
+      require($base_dir.'bd_config.php');
 
       try{
          $conn = new \MySQLi($dbhost, $user, $password, $db);
