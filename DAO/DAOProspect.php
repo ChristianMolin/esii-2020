@@ -4,7 +4,7 @@ namespace DAO;
 
 $separador = DIRECTORY_SEPARATOR;
 $root = $_SERVER['DOCUMENT_ROOT'].$separador;
-require_once($root .'prospectcolector/models/Prospect.php');
+require_once($root .'../models/Prospect.php');
 
 use models\Prospect;
 
@@ -56,10 +56,10 @@ class DAOProspect{
     * @param string $celular Novo celular para o prospect
     * @param string $facebook Novo endereço de facebook para o Prospect
     * @param string $whatsapp Novo número de whatsapp para o Prospect
-    * @param string $codProspect Código do Prospect que deve ser alterado
+    * @param string $codigo Código do Prospect que deve ser alterado
     * @return TRUE|Exception
     */
-   public function atualizarProspect($nome, $email, $celular, $facebook, $whatsapp, $codProspect){
+   public function atualizarProspect($nome, $email, $celular, $facebook, $whatsapp, $codigo){
       try {
          $conexaoDB = $this->conectarBanco();
       } catch (\Exception $e) {
@@ -74,7 +74,7 @@ class DAOProspect{
                                         whatsapp = ?
                                         where
                                         cod_prospect = ?");
-      $sqlUpdate->bind_param("sssssi", $nome, $email,$celular,$facebook,$whatsapp, $codProspect);
+      $sqlUpdate->bind_param("sssssi", $nome, $email,$celular,$facebook,$whatsapp, $codigo);
       $sqlUpdate->execute();
 
       if(!$sqlUpdate->error){
@@ -89,10 +89,10 @@ class DAOProspect{
    }
    /**
     * Exclui um prospect previamente cadastrado do banco de dados
-    * @param string $codProspect Código do Prospect que deve ser excluído
+    * @param string $codigo Código do Prospect que deve ser excluído
     * @return TRUE|Exception
     */
-   public function excluirProspect($codProspect){
+   public function excluirProspect($codigo){
       try {
          $conexaoDB = $this->conectarBanco();
       } catch (\Exception $e) {
@@ -102,7 +102,7 @@ class DAOProspect{
       $sqlDelete = $conexaoDB->prepare("delete from prospect
                                         where
                                         cod_prospect = ?");
-      $sqlDelete->bind_param("i", $codProspect);
+      $sqlDelete->bind_param("i", $codigo);
       $sqlDelete->execute();
 
       if(!$sqlDelete->error){
