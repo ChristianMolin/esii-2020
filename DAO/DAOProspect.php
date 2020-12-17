@@ -3,8 +3,9 @@
 namespace DAO;
 
 $separador = DIRECTORY_SEPARATOR;
-$root = $_SERVER['DOCUMENT_ROOT'].$separador;
-require_once($root .'../models/Prospect.php');
+$root = $_SERVER['DOCUMENT_ROOT'];
+
+require_once($root .'/esii-2020/models/Prospect.php');
 
 use models\Prospect;
 
@@ -56,10 +57,10 @@ class DAOProspect{
     * @param string $celular Novo celular para o prospect
     * @param string $facebook Novo endereço de facebook para o Prospect
     * @param string $whatsapp Novo número de whatsapp para o Prospect
-    * @param string $codigo Código do Prospect que deve ser alterado
+    * @param string $codProspect Código do Prospect que deve ser alterado
     * @return TRUE|Exception
     */
-   public function atualizarProspect($nome, $email, $celular, $facebook, $whatsapp, $codigo){
+   public function atualizarProspect($nome, $email, $celular, $facebook, $whatsapp, $codProspect){
       try {
          $conexaoDB = $this->conectarBanco();
       } catch (\Exception $e) {
@@ -74,7 +75,7 @@ class DAOProspect{
                                         whatsapp = ?
                                         where
                                         cod_prospect = ?");
-      $sqlUpdate->bind_param("sssssi", $nome, $email,$celular,$facebook,$whatsapp, $codigo);
+      $sqlUpdate->bind_param("sssssi", $nome, $email,$celular,$facebook,$whatsapp, $codProspect);
       $sqlUpdate->execute();
 
       if(!$sqlUpdate->error){
@@ -89,10 +90,10 @@ class DAOProspect{
    }
    /**
     * Exclui um prospect previamente cadastrado do banco de dados
-    * @param string $codigo Código do Prospect que deve ser excluído
+    * @param string $codProspect Código do Prospect que deve ser excluído
     * @return TRUE|Exception
     */
-   public function excluirProspect($codigo){
+   public function excluirProspect($codProspect){
       try {
          $conexaoDB = $this->conectarBanco();
       } catch (\Exception $e) {
@@ -102,7 +103,7 @@ class DAOProspect{
       $sqlDelete = $conexaoDB->prepare("delete from prospect
                                         where
                                         cod_prospect = ?");
-      $sqlDelete->bind_param("i", $codigo);
+      $sqlDelete->bind_param("i", $codProspect);
       $sqlDelete->execute();
 
       if(!$sqlDelete->error){
@@ -160,16 +161,13 @@ class DAOProspect{
 
    }
    private function conectarBanco(){
-      if (!defined('DS')) {
-         define( 'DS', DIRECTORY_SEPARATOR );
-      }
-      if (!defined('BASE_DIR')) {
-         define( 'BASE_DIR', dirname( __FILE__ ) . DS );
-      }
-      require(BASE_DIR . 'config.php');
+      $ds = DIRECTORY_SEPARATOR;
+      $base_dir = dirname(__FILE__).$ds;
+
+      require($base_dir.'bd_config.php');
 
       try {
-         $conn = new \MySQLi($dbhost, $user, $password, $banco);
+         $conn = new \MySQLi($dbhost, $user, $password, $db);
          return $conn;
       }catch (mysqli_sql_exception $e) {
          throw new \Exception($e);

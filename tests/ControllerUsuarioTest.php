@@ -16,7 +16,7 @@ class ControllerUsuarioTest extends TestCase{
       $usuario = new Usuario();
 
        try{
-         $usuario->addUsuario("chris", "Christian Molin", "christianmolin51@gmail.com", "(49)99163-5527", TRUE);
+         $usuario->addUsuario("chris", "Christian Moin", "christianmolin51@gmail.com", "(49)99163-5527", TRUE);
 
          $this->assertEquals(
             $usuario,
